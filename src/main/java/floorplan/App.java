@@ -3,6 +3,7 @@ package floorplan;
 import java.awt.*;
 import javax.swing.*;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import elements.*;
 import functions.*;
 
@@ -23,6 +24,11 @@ public class App extends JFrame {
     }
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel( new FlatDarkLaf());
+        } catch( Exception ex ) {
+            System.err.println( "Failed to initialize LaF" );
+        }
         SwingUtilities.invokeLater(() -> new App().setVisible(true));
     }
 
@@ -47,7 +53,7 @@ public class App extends JFrame {
         functionbox.addFunction(drawingPanel.getSelect());
         functionbox.addFunction(drawingPanel.getMove());
         functionbox.addFunction(drawingPanel.getRemove());
-        functionbox.addFunction(drawingPanel.getResize());
+        //functionbox.addFunction(drawingPanel.getResize());
         functionbox.addFunction(drawingPanel.getRotate());
 
         // Create and add the menu bar at the top

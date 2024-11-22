@@ -4,5 +4,6 @@
 
 
 module ECS160FloorPlanDesigner {
-	requires java.desktop;
+    requires com.formdev.flatlaf;
+    requires java.desktop;
 }

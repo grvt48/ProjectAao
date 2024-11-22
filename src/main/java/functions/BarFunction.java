@@ -34,7 +34,8 @@ public class BarFunction extends JPanel {
                 buttonName = "Remove   (R)";
                 break;
             case "Resize":
-                buttonName = "Resize   (Z)";
+                //buttonName = "Resize   (Z)";
+                buttonName = "unknown";
                 break;
             case "Rotate":
                 buttonName = "Rotate   (T)";

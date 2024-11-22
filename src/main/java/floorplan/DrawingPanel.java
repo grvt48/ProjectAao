@@ -144,7 +144,7 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
                 }
                 if (currentElement instanceof Room) {
                     ((Room) currentElement).setEndPoint(lastPoint);
-            
+
                     // Check for overlap with existing rooms
                     for (DesignElement element : designElements) {
                         if (element instanceof Room && element != currentElement) {
@@ -158,7 +158,7 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
                         }
                     }
                 }
-            
+
                 // FUNCTIONS
                 if (currentFunction instanceof Select) {
                     selectFunction.startPoint = null;
@@ -251,10 +251,10 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
                     onFunctionSelected(rotateSlider);
                 }
 
-                //Z, resize
+                /*//Z, resize
                 if (e.getKeyCode() == KeyEvent.VK_Z) {
                     onFunctionSelected(resizeSlider);
-                }
+                }*/
 
                 //CTRL+S, save floorplan to file
                 if (e.getKeyCode() == KeyEvent.VK_S && e.isControlDown()) {
@@ -367,11 +367,11 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
             currentFunction = null;
         }
 
-        //Show resize slider if appropriate
+        //Show resize slider if appropriate // turned it off
         if(currentFunction instanceof Resize){
             setLayout(new BorderLayout());
             add(resizeSlider, BorderLayout.NORTH);
-            resizeSlider.setVisible(true);
+            resizeSlider.setVisible(false);
         }else{
             resizeSlider.setVisible(false);
         }
@@ -422,8 +422,8 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
 
     //Nikka turn on grid snapping
     public void setGridSnapEnabled(boolean enabled) {
-    isGridSnapEnabled = enabled;
-}
+        isGridSnapEnabled = enabled;
+    }
 
 
     //Save floorplan to file
