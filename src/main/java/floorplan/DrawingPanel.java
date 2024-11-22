@@ -63,6 +63,8 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
         clearCanvas();
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
+        setBackground(Color.WHITE);
+
 
         //Initialize variables
         designElements = new ArrayList<>();
