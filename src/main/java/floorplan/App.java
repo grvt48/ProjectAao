@@ -41,7 +41,7 @@ public class App extends JFrame {
 
         // Create and add the toolbox to the east
         elementbox = new BarElement();
-        add(elementbox, BorderLayout.EAST);
+        add(elementbox, BorderLayout.WEST);
         elementbox.addObserver(drawingPanel);
 
         // Create and add the functionbox to the north
@@ -124,7 +124,7 @@ public class App extends JFrame {
         JMenu helpMenu = new JMenu("Help");
 
         JMenuItem aboutItem = new JMenuItem("About");
-        aboutItem.addActionListener(e -> JOptionPane.showMessageDialog(this, "Simple Floorplan Application\nVersion 1.0\nCreated by ChatGPT, Wahad, Kevin", "About", JOptionPane.INFORMATION_MESSAGE));
+        aboutItem.addActionListener(e -> JOptionPane.showMessageDialog(this, "Simple Floorplan Application\nVersion 1.0\n Created by Garvt, Raghav, Aniket, Rhythm", "About", JOptionPane.INFORMATION_MESSAGE));
         helpMenu.add(aboutItem);
 
         return helpMenu;

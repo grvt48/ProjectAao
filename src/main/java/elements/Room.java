@@ -5,15 +5,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Room implements DesignElement {
+    public enum RoomType {
+        DEFAULT(new Color(173, 216, 230)), // Light blue
+        BEDROOM(new Color(115,186,155)),     // Green
+        KITCHEN(new Color(214,40,40)),   // red
+        DINING_ROOM(new Color(252,191,70)), // yellow
+        BATHROOM(new Color(95,168,211));  // blue
+
+        private final Color defaultColor;
+
+        RoomType(Color defaultColor) {
+            this.defaultColor = defaultColor;
+        }
+
+        public Color getColor() {
+            System.out.println("Passed Color"+ defaultColor);
+            return defaultColor;
+        }
+    }
+
     private Point startPoint;
     private Point endPoint;
     private List<Wall> walls;
-    private boolean isSelected = false; // Selection state
+    private boolean isSelected = false;
+    private RoomType roomType;
+    public Color roomColor;
 
     public Room(Point startPoint) {
+        this(startPoint, RoomType.DEFAULT);
+    }
+
+    public Room(Point startPoint, RoomType roomType) {
         this.startPoint = startPoint;
-        this.endPoint = startPoint; // Initialize with startPoint
+        this.endPoint = startPoint;
         this.walls = new ArrayList<>();
+        this.roomType = roomType;
+        System.err.println("RoomType"+this.roomType);
+        this.roomColor = roomType.getColor();
         generateWalls();
     }
 
@@ -57,6 +85,15 @@ public class Room implements DesignElement {
         walls.add(rightWall);
     }
 
+    public void setRoomType(RoomType roomType) {
+        this.roomType = roomType;
+        this.roomColor = roomType.getColor();
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
+    }
+
     public boolean overlaps(Room other) {
         int x1 = Math.min(startPoint.x, endPoint.x);
         int y1 = Math.min(startPoint.y, endPoint.y);
@@ -75,13 +112,13 @@ public class Room implements DesignElement {
         return Math.abs(endPoint.x - startPoint.x);
     }
 
-    // Get the height of the room (difference in y coordinates)
     public int getHeight() {
         return Math.abs(endPoint.y - startPoint.y);
     }
 
     @Override
     public void draw(Graphics2D g) {
+        System.out.println("Drawing room: type=" + roomType + ", color=" + roomColor);
         if (startPoint == null || endPoint == null) return;
 
         // Calculate room dimensions
@@ -89,17 +126,17 @@ public class Room implements DesignElement {
         int y = Math.min(startPoint.y, endPoint.y);
         int width = Math.abs(endPoint.x - startPoint.x);
         int height = Math.abs(endPoint.y - startPoint.y);
-
+        
         // Fill the room interior with a color (different if selected)
-        if (isSelected) {
-            g.setColor(new Color(255, 0, 255, 100)); // Magenta with transparency for selected
-        } else {
-            g.setColor(new Color(173, 216, 230)); // Light blue for non-selected
-        }
+        Color fillColor = isSelected 
+            ? new Color(roomColor.getRed(), roomColor.getGreen(), roomColor.getBlue(), 200) 
+            : roomColor;
+        
+        g.setColor(fillColor);
         g.fillRect(x, y, width, height);
 
         // Draw walls (outline)
-        g.setColor(isSelected ? Color.MAGENTA : Color.BLACK); // Magenta for selected walls
+        g.setColor(isSelected ? Color.MAGENTA : Color.BLACK);
         for (Wall wall : walls) {
             wall.draw(g);
         }
@@ -130,16 +167,32 @@ public class Room implements DesignElement {
 
     @Override
     public void rotate(int angle) {
-        
+        // Optional: Implement rotation if needed
     }
 
     @Override
     public boolean isSelected() {
-        return isSelected; // Return the selection status
+        return isSelected;
+    }
+
+    public List<Point[]> getBoundaryWalls() {
+        List<Point[]> boundaryWalls = new ArrayList<>();
+        for (Wall wall : walls) {
+            boundaryWalls.add(new Point[]{wall.getStartPoint(), wall.getEndPoint()});
+        }
+        return boundaryWalls;
     }
 
     @Override
     public void setSelected(boolean selected) {
-        isSelected = selected; // Update the selection status
+        isSelected = selected;
+    }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+            "type=" + roomType +
+            ", location=(" + startPoint.x + "," + startPoint.y + ")" +
+            "}";
     }
 }

@@ -56,6 +56,41 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
         return new Point(x, y);
     }
 
+    private boolean isPointOnLineSegment(Point point, Point lineStart, Point lineEnd) {
+        final int THRESHOLD = 5; // Pixels
+        double distance = pointLineDistance(point, lineStart, lineEnd);
+        return distance <= THRESHOLD && 
+               isBetween(point.x, lineStart.x, lineEnd.x) && 
+               isBetween(point.y, lineStart.y, lineEnd.y);
+    }
+    
+    private boolean isBetween(double value, double start, double end) {
+        return Math.min(start, end) <= value && value <= Math.max(start, end);
+    }
+    
+    
+    private double pointLineDistance(Point p, Point lineStart, Point lineEnd) {
+        double lineLength = lineStart.distance(lineEnd);
+        if (lineLength == 0) return p.distance(lineStart); // Line is a point
+    
+        // Project the point onto the line segment
+        double t = ((p.x - lineStart.x) * (lineEnd.x - lineStart.x) + 
+                    (p.y - lineStart.y) * (lineEnd.y - lineStart.y)) / 
+                   (lineLength * lineLength);
+    
+        if (t < 0) return p.distance(lineStart); // Closest to lineStart
+        if (t > 1) return p.distance(lineEnd);   // Closest to lineEnd
+    
+        // Closest point on the line
+        Point projection = new Point(
+            (int) (lineStart.x + t * (lineEnd.x - lineStart.x)),
+            (int) (lineStart.y + t * (lineEnd.y - lineStart.y))
+        );
+    
+        return p.distance(projection);
+    }
+    
+
 
     public DrawingPanel(int width, int height) {
         //Create the canvas image and set the focus
@@ -94,6 +129,11 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
                 if (currentElement instanceof Wall) {
                     Wall newWall = new Wall();
                     currentElement = newWall;
+                    currentElement.setStartPoint(lastPoint);
+                    designElements.add(currentElement);
+                } else if (currentElement instanceof Door) {
+                    Door newDoor = new Door();
+                    currentElement = newDoor;
                     currentElement.setStartPoint(lastPoint);
                     designElements.add(currentElement);
                 } else if (currentElement instanceof Room) {
@@ -138,14 +178,49 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
 
                 lastPoint = snapToGrid(e.getPoint());
 
-                // ELEMENTS
-                if (currentElement instanceof Wall) {
-                    ((Wall) currentElement).setEndPoint(lastPoint);
-                } else if (currentElement instanceof Room) {
-                    ((Room) currentElement).setEndPoint(lastPoint);
+                if (currentElement instanceof Door) {
+                    Door door = (Door) currentElement;
+                    door.setEndPoint(lastPoint);
+                
+                    // Check if the door is on a wall or room boundary
+                    boolean isOnWallOrRoom = false;
+                    for (DesignElement element : designElements) {
+                        if (element instanceof Wall) {
+                            Wall wall = (Wall) element;
+                
+                            // Check if the door's start and end points are on or near the wall
+                            if (isPointOnLineSegment(door.getStartPoint(), wall.getStartPoint(), wall.getEndPoint()) &&
+                                isPointOnLineSegment(door.getEndPoint(), wall.getStartPoint(), wall.getEndPoint())) {
+                                isOnWallOrRoom = true;
+                                break;
+                            }
+                        } else if (element instanceof Room) {
+                            Room room = (Room) element;
+                
+                            // Check if the door's start and end points align with any boundary wall of the room
+                            List<Point[]> roomWalls = room.getBoundaryWalls(); // Assume this method provides room wall segments
+                            for (Point[] wallSegment : roomWalls) {
+                                if (isPointOnLineSegment(door.getStartPoint(), wallSegment[0], wallSegment[1]) &&
+                                    isPointOnLineSegment(door.getEndPoint(), wallSegment[0], wallSegment[1])) {
+                                    isOnWallOrRoom = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                
+                    if (!isOnWallOrRoom) {
+                        JOptionPane.showMessageDialog(DrawingPanel.this, "Doors must be placed on walls or room boundaries!");
+                        designElements.remove(currentElement); // Remove invalid door
+                        currentElement = null;
+                        repaint();
+                        return;
+                    }
                 }
-                if (currentElement instanceof Room) {
-                    ((Room) currentElement).setEndPoint(lastPoint);
+                else if (currentElement instanceof Wall) {
+        ((Wall) currentElement).setEndPoint(lastPoint);
+    } else if (currentElement instanceof Room) {
+        ((Room) currentElement).setEndPoint(lastPoint);
 
                     // Check for overlap with existing rooms
                     for (DesignElement element : designElements) {
@@ -187,6 +262,8 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
                 // ELEMENTS
                 if (currentElement instanceof Wall) {
                     ((Wall) currentElement).setEndPoint(lastPoint);
+                }else if (currentElement instanceof Door) {
+                    ((Door) currentElement).setEndPoint(lastPoint);
                 } else if (currentElement instanceof Room) {
                     ((Room) currentElement).setEndPoint(lastPoint);
                 }
@@ -205,7 +282,7 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
                 lastPoint = snapToGrid(e.getPoint());
 
                 // Preview of the current element
-                if (currentElement != null && !(currentElement instanceof Wall || currentElement instanceof Room)) {
+                if (currentElement != null && !(currentElement instanceof Wall || currentElement instanceof Door || currentElement instanceof Room)) {
                     currentElement.setStartPoint(lastPoint);
                 }
 

@@ -10,7 +10,7 @@ import java.awt.geom.AffineTransform;
  */
 public class Window implements DesignElement {
     private static final int DEFAULT_WINDOW_WIDTH = 40;
-    private static final int DEFAULT_WINDOW_HEIGHT = 5;
+    private static final int DEFAULT_WINDOW_HEIGHT = 3;
     private int windowWidth = DEFAULT_WINDOW_WIDTH;
     private int windowHeight = DEFAULT_WINDOW_HEIGHT;
     private Point startPoint;
@@ -26,26 +26,36 @@ public class Window implements DesignElement {
     }
 
     @Override
-    public void draw(Graphics2D g) {
-        if (isSelected == true) {
-    		g.setColor(Color.MAGENTA);
-    	} else {
-    		g.setColor(Color.BLUE);
-    	}
+public void draw(Graphics2D g) {
+    // Save the current graphics transformation
+    AffineTransform oldTransform = g.getTransform();
 
+    // Translate and rotate the graphics context to draw the window at the desired position and angle
+    g.translate(startPoint.x, startPoint.y);
+    g.rotate(Math.toRadians(rotationAngle));
 
-        // Save the current graphics transformation
-        AffineTransform oldTransform = g.getTransform();
+    // Set the stroke for drawing
+    g.setStroke(new BasicStroke(2));
 
-        // Translate and rotate the graphics context to draw the bed at the desired position and angle
-        g.translate(startPoint.x, startPoint.y);
-        g.rotate(Math.toRadians(rotationAngle));
+    // Calculate the number of stripes that will fit inside the window
+    int numStripes = windowWidth / 5; // Stripes will be 10px wide each, can adjust as needed
 
-        g.fillRect( - windowWidth / 2, - windowHeight / 2, windowWidth, windowHeight);
-
-        // Restore the old graphics transformation
-        g.setTransform(oldTransform);
+    // Loop to draw alternating black and white stripes
+    for (int i = 0; i < numStripes; i++) {
+        if (i == 1||i == 2||i == 5||i == 6) {
+            g.setColor(new Color(0, 0, 0, 0));
+        } else {
+            g.setColor(Color.WHITE); // White stripe
+        }
+        g.fillRect(-windowWidth / 2 + (i * 5), -windowHeight / 2, 5, windowHeight); // 5px wide stripes
     }
+
+    // Restore the old graphics transformation
+    g.setTransform(oldTransform);
+}
+
+
+
 
     @Override
     public Shape getBounds() {
@@ -78,13 +88,13 @@ public class Window implements DesignElement {
     }
 
     @Override
-	public boolean isSelected() {
-    	return isSelected;
+    public boolean isSelected() {
+        return isSelected;
     }
-    
+
     @Override
     public void setSelected(boolean selected) {
-    	isSelected = selected;
+        isSelected = selected;
     }
 
     @Override
@@ -98,4 +108,3 @@ public class Window implements DesignElement {
         rotationAngle = angle;
     }
 }
-

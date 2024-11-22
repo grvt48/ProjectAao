@@ -4,13 +4,13 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 /**
- * Class representing a wall design element.
+ * Class representing a Door design element.
  *
  * @author ChatGPT, Wahad Latif
  */
-public class Wall implements DesignElement{
-    private int DEFUALT_WALL_THICKNESS = 3;
-    protected int wallThickness = DEFUALT_WALL_THICKNESS;
+public class Door implements DesignElement{
+    private int DEFUALT_Door_THICKNESS = 3;
+    protected int DoorThickness = DEFUALT_Door_THICKNESS;
     private Point startPoint;
     private Point endPoint;
     private boolean isSelected = false;
@@ -29,7 +29,7 @@ public class Wall implements DesignElement{
         if(this.endPoint == null){
             this.startPoint = startPoint;
             this.endPoint = startPoint; // Reset end point to start point initially
-        //Moving the wall, adjust endpoint too
+        //Moving the Door, adjust endpoint too
         }else{
             if(this.startPoint.x == this.endPoint.x){
                 int ydiff = this.endPoint.y - this.startPoint.y;
@@ -63,9 +63,9 @@ public class Wall implements DesignElement{
             if (isSelected == true) {
         		g.setColor(Color.MAGENTA);
         	} else {
-        		g.setColor(Color.BLACK);
+        		g.setColor(Color.WHITE);
         	}
-            g.setStroke(new BasicStroke(wallThickness, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
+            g.setStroke(new BasicStroke(DoorThickness, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
             
             //first draw
             if(rotationAngle == 0){
@@ -96,8 +96,8 @@ public class Wall implements DesignElement{
         // Calculate the angle of rotation
         double angle = Math.toRadians(rotationAngle);
 
-        // Calculate the half thickness of the wall
-        int halfThickness = wallThickness / 2;
+        // Calculate the half thickness of the Door
+        int halfThickness = DoorThickness / 2;
 
         // Calculate the unrotated coordinates of the four corners of the bounding box
         int[] xPoints = {startPoint.x - halfThickness, endPoint.x + halfThickness, endPoint.x + halfThickness, startPoint.x - halfThickness};
@@ -150,7 +150,7 @@ public class Wall implements DesignElement{
 
     @Override
     public void resize(double scale) {
-        wallThickness = (int) (scale * DEFUALT_WALL_THICKNESS);
+        DoorThickness = (int) (scale * DEFUALT_Door_THICKNESS);
     }
 
     @Override

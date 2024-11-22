@@ -6,38 +6,106 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * Class for design elements sidebar
- * @author Wahad Latif and ChatGPT
- *
- */
 public class BarElement extends JPanel {
     private List<ElementSelectedObserver> observers = new ArrayList<>();
+    private JPanel roomTypePanel;
+    private JButton roomButton;
+    private boolean isRoomPanelVisible = false;
 
     public BarElement() {
-        setLayout(new GridLayout(9, 2)); // Increased rows to fit the Room button
-        addRoomButton(); // Add the Room button here
-        addElement(new Window());
-        addElement(new DoorRight());
-        addElement(new DoorLeft());
-        addElement(new Bath());
-        addElement(new Bed());
-        addElement(new Chair());
-        addElement(new Counter());
-        addElement(new Desk());
-        addElement(new Fridge());
-        addElement(new Lamp());
-        addElement(new Plant());
-        addElement(new Sink());
-        addElement(new Sofa());
-        addElement(new Stairs());
-        addElement(new Stove());
-        addElement(new Table());
-        addElement(new Toilet());
+        // Use BorderLayout for more flexible positioning
+        setLayout(new BorderLayout(5, 5)); // Added gap between components
+        
+        // Create main panel for elements (left-side)
+        JPanel elementsPanel = new JPanel(new GridLayout(0, 1)); // Changed to 1 column
+        elementsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10)); // Add right padding
+        
+        // Create room button and room type panel
+        roomButton = createRoomButton();
+        roomTypePanel = createRoomTypePanel();
+        roomTypePanel.setVisible(false);
+        
+        // Add room button and other elements to elements panel
+        elementsPanel.add(roomButton);
+        addOtherElements(elementsPanel);
+        
+        // Add elements panel to the west (left)
+        add(elementsPanel, BorderLayout.WEST);
+        
+        // Add room type panel to the center
+        add(roomTypePanel, BorderLayout.CENTER);
     }
 
-    private void addElement(DesignElement element) {
-        // Custom Button Names
+    private JButton createRoomButton() {
+        JButton button = new JButton("Room");
+        button.setPreferredSize(new Dimension(100, 40));
+        button.setMargin(new Insets(3, 3, 3, 3));
+        
+        button.addActionListener(e -> {
+            isRoomPanelVisible = !isRoomPanelVisible;
+            roomTypePanel.setVisible(isRoomPanelVisible);
+            
+            // Notify parent container to revalidate and repaint
+            SwingUtilities.getWindowAncestor(this).validate();
+        });
+        
+        return button;
+    }
+
+    private JPanel createRoomTypePanel() {
+        JPanel panel = new JPanel(new GridLayout(10, 1,0,10)); // Changed to single column (vertical layout)
+        panel.setBorder(BorderFactory.createTitledBorder("Room Types"));
+        panel.setPreferredSize(new Dimension(150, 250)); // Increased height to accommodate vertical layout
+        
+        // Room type buttons with specific colors
+        addRoomTypeButton(panel, "Bedroom", Room.RoomType.BEDROOM);
+        addRoomTypeButton(panel, "Kitchen", Room.RoomType.KITCHEN);
+        addRoomTypeButton(panel, "Dining Room", Room.RoomType.DINING_ROOM);
+        addRoomTypeButton(panel, "Bathroom", Room.RoomType.BATHROOM);
+        
+        return panel;
+    }
+    private void addRoomTypeButton(JPanel panel, String roomType, Room.RoomType type) {
+        JButton button = new JButton(roomType);
+        button.setBackground(type.getColor());
+        button.setOpaque(true);
+        button.setBorderPainted(true);
+        button.setForeground(Color.BLACK);
+        button.addActionListener(e -> {
+            Room room = new Room(new Point(0, 0), type);
+            notifyObservers(room);
+            
+            // Hide room type panel after selection
+            isRoomPanelVisible = false;
+            roomTypePanel.setVisible(false);
+            SwingUtilities.getWindowAncestor(this).validate();
+        });
+        
+        panel.add(button);
+    }
+
+    private void addOtherElements(JPanel panel) {
+        // Add all other design elements as before
+        addElement(panel, new Wall());
+        addElement(panel, new Door());
+        addElement(panel, new Window());
+        addElement(panel, new Bath());
+        addElement(panel, new Bed());
+        addElement(panel, new Chair());
+        addElement(panel, new Counter());
+        addElement(panel, new Desk());
+        addElement(panel, new Fridge());
+        addElement(panel, new Lamp());
+        addElement(panel, new Plant());
+        addElement(panel, new Sink());
+        addElement(panel, new Sofa());
+        addElement(panel, new Stairs());
+        addElement(panel, new Stove());
+        addElement(panel, new Table());
+        addElement(panel, new Toilet());
+    }
+
+    private void addElement(JPanel panel, DesignElement element) {
         String buttonName = element.getClass().getSimpleName();
         if (buttonName.equals("DoorRight")) {
             buttonName = "<html>Door<br />Right</html>";
@@ -45,38 +113,13 @@ public class BarElement extends JPanel {
         if (buttonName.equals("DoorLeft")) {
             buttonName = "<html>Door<br />Left</html>";
         }
+        
         JButton button = new JButton(buttonName);
-
-        // Set a preferred size for the button
-        button.setPreferredSize(new Dimension(60, 40));
-
-        // Set a margin to provide padding around the text
+        button.setPreferredSize(new Dimension(100, 40));
         button.setMargin(new Insets(3, 3, 3, 3));
-
-        // Whenever button is clicked, observers (drawingPanel) know what design element was picked
         button.addActionListener(e -> notifyObservers(element));
-
-        add(button);
-    }
-
-    //Nikka samajh ni aara
-    
-    private void addRoomButton() {
-        JButton roomButton = new JButton("Room");
-
-        // Set a preferred size for the button
-        roomButton.setPreferredSize(new Dimension(60, 40));
-
-        // Set a margin to provide padding around the text
-        roomButton.setMargin(new Insets(3, 3, 3, 3));
-
-        // Notify observers that the Room element is selected
-        roomButton.addActionListener(e -> {
-            // Room will default to a small rectangle; its size will be adjusted during placement
-            notifyObservers(new Room(new Point(0, 0))); // Default room dimensions
-        });
-
-        add(roomButton);
+        
+        panel.add(button);
     }
 
     public void addObserver(ElementSelectedObserver observer) {
