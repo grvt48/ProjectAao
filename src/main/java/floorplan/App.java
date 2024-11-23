@@ -3,7 +3,7 @@ package floorplan;
 import java.awt.*;
 import javax.swing.*;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import elements.*;
 import functions.*;
 
@@ -25,7 +25,7 @@ public class App extends JFrame {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel( new FlatDarkLaf());
+            UIManager.setLookAndFeel( new FlatMacDarkLaf());
         } catch( Exception ex ) {
             System.err.println( "Failed to initialize LaF" );
         }
