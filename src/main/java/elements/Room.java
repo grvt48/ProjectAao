@@ -5,43 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Room implements DesignElement {
-    public enum RoomType {
-        DEFAULT(new Color(173, 216, 230)), // Light blue
-        BEDROOM(new Color(115,186,155)),     // Green
-        KITCHEN(new Color(214,40,40)),   // red
-        DINING_ROOM(new Color(252,191,70)), // yellow
-        BATHROOM(new Color(95,168,211));  // blue
-
-        private final Color defaultColor;
-
-        RoomType(Color defaultColor) {
-            this.defaultColor = defaultColor;
-        }
-
-        public Color getColor() {
-            System.out.println("Passed Color"+ defaultColor);
-            return defaultColor;
-        }
-    }
-
     private Point startPoint;
     private Point endPoint;
     private List<Wall> walls;
-    private boolean isSelected = false;
-    private RoomType roomType;
-    public Color roomColor;
+    private boolean isSelected = false; // Selection state
+    private char type='z';
 
     public Room(Point startPoint) {
-        this(startPoint, RoomType.DEFAULT);
+        this.startPoint = startPoint;
+        this.endPoint = startPoint; // Initialize with startPoint
+        this.walls = new ArrayList<>();
+        generateWalls();
     }
 
-    public Room(Point startPoint, RoomType roomType) {
+    public Room(Point startPoint, char type) {
+        this.type=type;
         this.startPoint = startPoint;
-        this.endPoint = startPoint;
+        this.endPoint = startPoint; // Initialize with startPoint
         this.walls = new ArrayList<>();
-        this.roomType = roomType;
-        System.err.println("RoomType"+this.roomType);
-        this.roomColor = roomType.getColor();
         generateWalls();
     }
 
@@ -85,15 +66,6 @@ public class Room implements DesignElement {
         walls.add(rightWall);
     }
 
-    public void setRoomType(RoomType roomType) {
-        this.roomType = roomType;
-        this.roomColor = roomType.getColor();
-    }
-
-    public RoomType getRoomType() {
-        return roomType;
-    }
-
     public boolean overlaps(Room other) {
         int x1 = Math.min(startPoint.x, endPoint.x);
         int y1 = Math.min(startPoint.y, endPoint.y);
@@ -112,13 +84,13 @@ public class Room implements DesignElement {
         return Math.abs(endPoint.x - startPoint.x);
     }
 
+    // Get the height of the room (difference in y coordinates)
     public int getHeight() {
         return Math.abs(endPoint.y - startPoint.y);
     }
 
     @Override
     public void draw(Graphics2D g) {
-        System.out.println("Drawing room: type=" + roomType + ", color=" + roomColor);
         if (startPoint == null || endPoint == null) return;
 
         // Calculate room dimensions
@@ -126,17 +98,33 @@ public class Room implements DesignElement {
         int y = Math.min(startPoint.y, endPoint.y);
         int width = Math.abs(endPoint.x - startPoint.x);
         int height = Math.abs(endPoint.y - startPoint.y);
-        
+
         // Fill the room interior with a color (different if selected)
-        Color fillColor = isSelected 
-            ? new Color(roomColor.getRed(), roomColor.getGreen(), roomColor.getBlue(), 200) 
-            : roomColor;
-        
-        g.setColor(fillColor);
+        if (isSelected) {
+            g.setColor(new Color(255, 0, 255, 100)); // Magenta with transparency for selected
+        } else {
+            switch (type) {
+                case 'a':
+                    g.setColor(new Color(115, 186, 155)); // Green for Bedroom
+                    break;
+                case 'd':
+                    g.setColor(new Color(95, 168, 211)); // Blue for Kitchen
+                    break;
+                case 'b':
+                    g.setColor(new Color(214, 40, 40,210)); // Red for Dining Room
+                    break;
+                case 'c':
+                    g.setColor(new Color(252, 191, 73)); // Yellow for Bathroom
+                    break;
+                default:
+                    g.setColor(new Color(173, 216, 230)); // Default color
+                    break;
+            }            
+        }
         g.fillRect(x, y, width, height);
 
         // Draw walls (outline)
-        g.setColor(isSelected ? Color.MAGENTA : Color.BLACK);
+        g.setColor(isSelected ? Color.MAGENTA : Color.BLACK); // Magenta for selected walls
         for (Wall wall : walls) {
             wall.draw(g);
         }
@@ -167,12 +155,12 @@ public class Room implements DesignElement {
 
     @Override
     public void rotate(int angle) {
-        // Optional: Implement rotation if needed
+        
     }
 
     @Override
     public boolean isSelected() {
-        return isSelected;
+        return isSelected; // Return the selection status
     }
 
     public List<Point[]> getBoundaryWalls() {
@@ -182,17 +170,14 @@ public class Room implements DesignElement {
         }
         return boundaryWalls;
     }
+    
 
     @Override
     public void setSelected(boolean selected) {
-        isSelected = selected;
+        isSelected = selected; // Update the selection status
     }
 
-    @Override
-    public String toString() {
-        return "Room{" +
-            "type=" + roomType +
-            ", location=(" + startPoint.x + "," + startPoint.y + ")" +
-            "}";
+    public char getRoomType() {
+        return type;
     }
 }

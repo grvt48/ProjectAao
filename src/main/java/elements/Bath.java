@@ -32,7 +32,7 @@ public class Bath implements DesignElement {
         if (isSelected) {
             g.setColor(Color.MAGENTA);
         } else {
-            g.setColor(Color.BLUE);
+            g.setColor(Color.WHITE);
         }
         g.setStroke(new BasicStroke(2));
 

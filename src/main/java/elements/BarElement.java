@@ -1,6 +1,8 @@
 package elements;
 
 import javax.swing.*;
+
+import floorplan.DrawingPanel;
 import floorplan.ElementSelectedObserver;
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,79 +15,86 @@ public class BarElement extends JPanel {
     private boolean isRoomPanelVisible = false;
 
     public BarElement() {
-        // Use BorderLayout for more flexible positioning
+        // Use BorderLayout for flexible positioning
         setLayout(new BorderLayout(5, 5)); // Added gap between components
-        
+
         // Create main panel for elements (left-side)
         JPanel elementsPanel = new JPanel(new GridLayout(0, 1)); // Changed to 1 column
-        elementsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10)); // Add right padding
-        
+        elementsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5)); // Add right padding
+
         // Create room button and room type panel
         roomButton = createRoomButton();
         roomTypePanel = createRoomTypePanel();
         roomTypePanel.setVisible(false);
-        
+
         // Add room button and other elements to elements panel
         elementsPanel.add(roomButton);
         addOtherElements(elementsPanel);
-        
+
         // Add elements panel to the west (left)
         add(elementsPanel, BorderLayout.WEST);
-        
+
         // Add room type panel to the center
         add(roomTypePanel, BorderLayout.CENTER);
     }
 
     private JButton createRoomButton() {
         JButton button = new JButton("Room");
-        button.setPreferredSize(new Dimension(100, 40));
+        button.setPreferredSize(new Dimension(80, 40));
         button.setMargin(new Insets(3, 3, 3, 3));
-        
+
         button.addActionListener(e -> {
             isRoomPanelVisible = !isRoomPanelVisible;
             roomTypePanel.setVisible(isRoomPanelVisible);
-            
+
             // Notify parent container to revalidate and repaint
             SwingUtilities.getWindowAncestor(this).validate();
         });
-        
+
         return button;
     }
 
     private JPanel createRoomTypePanel() {
-        JPanel panel = new JPanel(new GridLayout(10, 1,0,10)); // Changed to single column (vertical layout)
+        JPanel panel = new JPanel(new GridLayout(10, 1, 0, 10)); // Single column (vertical layout)
         panel.setBorder(BorderFactory.createTitledBorder("Room Types"));
-        panel.setPreferredSize(new Dimension(150, 250)); // Increased height to accommodate vertical layout
-        
-        // Room type buttons with specific colors
-        addRoomTypeButton(panel, "Bedroom", Room.RoomType.BEDROOM);
-        addRoomTypeButton(panel, "Kitchen", Room.RoomType.KITCHEN);
-        addRoomTypeButton(panel, "Dining Room", Room.RoomType.DINING_ROOM);
-        addRoomTypeButton(panel, "Bathroom", Room.RoomType.BATHROOM);
-        
+        panel.setPreferredSize(new Dimension(120, 250)); // Increased height to accommodate vertical layout
+
+        // Add room type buttons
+        addRoomTypeButton(panel);
+
         return panel;
     }
-    private void addRoomTypeButton(JPanel panel, String roomType, Room.RoomType type) {
-        JButton button = new JButton(roomType);
-        button.setBackground(type.getColor());
-        button.setOpaque(true);
-        button.setBorderPainted(true);
-        button.setForeground(Color.BLACK);
-        button.addActionListener(e -> {
-            Room room = new Room(new Point(0, 0), type);
-            notifyObservers(room);
-            
-            // Hide room type panel after selection
-            isRoomPanelVisible = false;
-            roomTypePanel.setVisible(false);
-            SwingUtilities.getWindowAncestor(this).validate();
-        });
-        
-        panel.add(button);
+
+    private void addRoomTypeButton(JPanel panel) {
+        String[] roomTypes = {"Bedroom", "Kitchen", "Dining Room", "Bathroom"};
+        char[] typeParams = {'a', 'b', 'c', 'd'};
+    
+        for (int i = 0; i < roomTypes.length; i++) {
+            String roomType = roomTypes[i];
+            char typeParam = typeParams[i];
+    
+            JButton button = new JButton(roomType);
+            button.setPreferredSize(new Dimension(100, 40));
+            button.setMargin(new Insets(3, 3, 3, 3));
+    
+            button.addActionListener(e -> {
+    // First command: change room type
+    DrawingPanel.changeroom(typeParam);
+
+    // Second command: notify observers
+    notifyObservers(new Room(new Point(0, 0), typeParam));
+
+    // Third command: adjust position and size dynamically (example)
+    });
+
+    
+            panel.add(button);
+        }
     }
+    
 
     private void addOtherElements(JPanel panel) {
-        // Add all other design elements as before
+        // Add other design elements as before
         addElement(panel, new Wall());
         addElement(panel, new Door());
         addElement(panel, new Window());
@@ -113,12 +122,12 @@ public class BarElement extends JPanel {
         if (buttonName.equals("DoorLeft")) {
             buttonName = "<html>Door<br />Left</html>";
         }
-        
+
         JButton button = new JButton(buttonName);
         button.setPreferredSize(new Dimension(100, 40));
         button.setMargin(new Insets(3, 3, 3, 3));
         button.addActionListener(e -> notifyObservers(element));
-        
+
         panel.add(button);
     }
 

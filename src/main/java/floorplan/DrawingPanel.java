@@ -46,6 +46,10 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
     private boolean isGridSnapEnabled = true;
     private int gridSize = 20;
 
+    static char roomtype='z';
+    public static void changeroom(char type){
+        roomtype=type;
+    }
     //Nikka snapper attempt
     private Point snapToGrid(Point point) {
         if (!isGridSnapEnabled) {
@@ -138,7 +142,7 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
                     designElements.add(currentElement);
                 } else if (currentElement instanceof Room) {
                     try {
-                        Room newRoom = new Room(lastPoint); // Pass the required Point
+                        Room newRoom = new Room(lastPoint,roomtype); // Pass the required Point
                         currentElement = newRoom;
                         currentElement.setStartPoint(lastPoint);
                         designElements.add(currentElement);
@@ -408,7 +412,7 @@ public class DrawingPanel extends JPanel implements ElementSelectedObserver, Fun
         try {
             if (element instanceof Room) {
                 // For Room, use a constructor that initializes with a Point
-                currentElement = new Room(new Point(0, 0)); // Default start point
+                currentElement = new Room(new Point(0, 0),roomtype); // Default start point
             } else {
                 // For other elements, use reflection to create a copy
                 currentElement = element.getClass().getDeclaredConstructor().newInstance();
