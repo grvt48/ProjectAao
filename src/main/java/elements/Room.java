@@ -166,6 +166,7 @@ public class Room implements DesignElement {
     public List<Point[]> getBoundaryWalls() {
         List<Point[]> boundaryWalls = new ArrayList<>();
         for (Wall wall : walls) {
+            if(type=='a'||type=='d') continue;
             boundaryWalls.add(new Point[]{wall.getStartPoint(), wall.getEndPoint()});
         }
         return boundaryWalls;

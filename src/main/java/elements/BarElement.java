@@ -97,7 +97,7 @@ public class BarElement extends JPanel {
         // Add other design elements as before
         addElement(panel, new Wall());
         addElement(panel, new Door());
-        addElement(panel, new Window());
+        addElement(panel, new Windoww());
         addElement(panel, new Bath());
         addElement(panel, new Bed());
         addElement(panel, new Chair());
@@ -118,6 +118,9 @@ public class BarElement extends JPanel {
         String buttonName = element.getClass().getSimpleName();
         if (buttonName.equals("DoorRight")) {
             buttonName = "<html>Door<br />Right</html>";
+        }
+        if (buttonName.equals("Windoww")) {
+            buttonName = "<html>Window</html>";
         }
         if (buttonName.equals("DoorLeft")) {
             buttonName = "<html>Door<br />Left</html>";

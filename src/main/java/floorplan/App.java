@@ -3,16 +3,12 @@ package floorplan;
 import java.awt.*;
 import javax.swing.*;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import elements.*;
 import functions.*;
 
-/**
- * Simple Floor Plan Designer using Java Swing.
- * Allows users to draw, save, load, and clear floor plans.
- *
- * @author ChatGPT, Wahad Latif, Kevin Cao
- */
+
 public class App extends JFrame {
     private DrawingPanel drawingPanel;
     private BarElement elementbox;
