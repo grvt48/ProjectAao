@@ -11,4 +11,4 @@ Our Contributors-
 Neutrinozoid
 grvt48
 Aniket-BPHC
-Rhythm Bulani
+rhythmbulani
