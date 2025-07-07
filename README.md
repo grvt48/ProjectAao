@@ -8,7 +8,7 @@ Notable Features:
 5) Common things such as a door from bathroom to outside the house is forbidden.
 6) Ability to save and load in a .ser file format, enabling transfer of work from one system to other.
 Our Contributors-
-Neutrinozoid
-grvt48
-Aniket-BPHC
-rhythmbulani
+Neutrinozoid (Raghav Bathla)
+grvt48 (Garvit Dhamijha)
+Aniket-BPHC (Aniket Shukla)
+rhythmbulani (Rhythm Bulani)
